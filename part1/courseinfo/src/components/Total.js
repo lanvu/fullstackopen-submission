@@ -1,5 +1,10 @@
 import React from 'react'
 
-export const Total = ({ exercises1, exercises2, exercises3 }) => {
-  return <p>Number of exercises {exercises1 + exercises2 + exercises3}</p>
+export const Total = ({ parts }) => {
+  return (
+    <p>
+      Number of exercises{' '}
+      {parts[0].exercises + parts[1].exercises + parts[2].exercises}
+    </p>
+  )
 }

@@ -1,5 +1,5 @@
 import React from 'react'
 
-export const Header = ({ course }) => {
-  return <h1>{course}</h1>
+export const Header = ({ name }) => {
+  return <h1>{name}</h1>
 }
