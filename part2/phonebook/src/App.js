@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 
 const Input = ({ label, value, onChange }) => {
   return (
@@ -38,19 +39,14 @@ const Persons = ({ persons }) => {
   return (
     <>
       {persons.map(person => (
-        <Person key={person.name} name={person.name} number={person.number} />
+        <Person key={person.id} name={person.name} number={person.number} />
       ))}
     </>
   )
 }
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newSearch, setNewSearch] = useState('')
@@ -81,6 +77,12 @@ const App = () => {
   const personsToShow = persons.filter(person =>
     person.name.toLowerCase().includes(newSearch.toLowerCase())
   )
+
+  useEffect(() => {
+    axios.get('http://localhost:3001/persons').then(response => {
+      setPersons(response.data)
+    })
+  }, [])
 
   return (
     <div>
