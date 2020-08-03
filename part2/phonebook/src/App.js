@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import personService from './services/persons'
+import './App.css'
 
 const Input = ({ label, value, onChange }) => {
   return (
@@ -46,11 +47,34 @@ const Persons = ({ persons, handleClick }) => {
   )
 }
 
+const Notification = ({ status, message }) => {
+  if (status === null) {
+    return null
+  } else if (status === 'error') {
+    return <div className="error">{message}</div>
+  } else {
+    return <div className="success">{message}</div>
+  }
+}
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newSearch, setNewSearch] = useState('')
+  const [notification, setNotification] = useState({
+    status: null,
+    message: ''
+  })
+
+  const resetNotification = () => {
+    setTimeout(() => {
+      setNotification({
+        status: null,
+        message: ''
+      })
+    }, 5000)
+  }
 
   const getAllPersons = () => {
     personService.getAll().then(initialPersons => {
@@ -61,9 +85,9 @@ const App = () => {
   const addPerson = event => {
     event.preventDefault()
     const person = persons.find(person => person.name === newName)
-    const changedPerson = { ...person, number: newNumber }
 
     if (person) {
+      const changedPerson = { ...person, number: newNumber }
       if (
         window.confirm(
           `${newName} is already added to phonebook, replace the old number with a new one?`
@@ -71,13 +95,33 @@ const App = () => {
       ) {
         personService
           .update(person.id, changedPerson)
-          .then(() => getAllPersons())
+          .then(() => {
+            getAllPersons()
+            setNotification({
+              status: 'success',
+              message: `Updated ${person.name}`
+            })
+            resetNotification()
+          })
+          .catch(error => {
+            setNotification({
+              status: 'error',
+              message: `Infomation of ${person.name} has already been removed from server`
+            })
+            resetNotification()
+            getAllPersons()
+          })
       }
     } else {
       personService
         .create({ name: newName, number: newNumber })
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
+          setNotification({
+            status: 'success',
+            message: `Added ${returnedPerson.name}`
+          })
+          resetNotification()
         })
     }
 
@@ -87,7 +131,14 @@ const App = () => {
 
   const deletePerson = (id, name) => {
     if (window.confirm(`Delete ${name} ?`)) {
-      personService.deleteOne(id).then(() => getAllPersons())
+      personService.deleteOne(id).then(() => {
+        getAllPersons()
+        setNotification({
+          status: 'success',
+          message: `Deleted ${name}`
+        })
+        resetNotification()
+      })
     }
   }
 
@@ -114,6 +165,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification {...notification} />
+
       <Input
         label={'filter shown with:'}
         value={newSearch}
