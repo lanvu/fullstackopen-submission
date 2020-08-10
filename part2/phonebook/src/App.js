@@ -82,9 +82,10 @@ const App = () => {
     })
   }
 
-  const addPerson = event => {
+  const addPerson = async event => {
     event.preventDefault()
-    const person = persons.find(person => person.name === newName)
+    const savedPersons = await personService.getAll()
+    const person = savedPersons.find(person => person.name === newName)
 
     if (person) {
       const changedPerson = { ...person, number: newNumber }
