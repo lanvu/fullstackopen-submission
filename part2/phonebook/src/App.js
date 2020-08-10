@@ -107,7 +107,7 @@ const App = () => {
           .catch(error => {
             setNotification({
               status: 'error',
-              message: `Infomation of ${person.name} has already been removed from server`
+              message: error.response.data.error
             })
             resetNotification()
             getAllPersons()
@@ -121,6 +121,13 @@ const App = () => {
           setNotification({
             status: 'success',
             message: `Added ${returnedPerson.name}`
+          })
+          resetNotification()
+        })
+        .catch(error => {
+          setNotification({
+            status: 'error',
+            message: error.response.data.error
           })
           resetNotification()
         })
