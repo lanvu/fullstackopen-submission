@@ -19,13 +19,29 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
+  } else if (error.name === 'JsonWebTokenError') {
+    return response.status(401).json({
+      error: 'invalid token'
+    })
   }
 
   next(error)
 }
 
+const tokenExtractor = (request, response, next) => {
+  // code that extracts the token
+  const authorization = request.get('authorization')
+  let token = null
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    token = authorization.substring(7)
+  }
+  request.token = token
+  next()
+}
+
 module.exports = {
   requestLogger,
   unknownEndpoint,
-  errorHandler
+  errorHandler,
+  tokenExtractor
 }

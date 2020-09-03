@@ -39,8 +39,11 @@ test('a valid blog can be added', async () => {
     url: 'lanvu.com'
   }
 
+  const token = await helper.getToken()
+
   await api
     .post('/api/blogs')
+    .set('Authorization', `bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -60,8 +63,11 @@ test('a blog without likes defaults to 0', async () => {
     url: 'lanvu.com'
   }
 
+  const token = await helper.getToken()
+
   await api
     .post('/api/blogs')
+    .set('Authorization', `bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -76,7 +82,23 @@ test('a blog without title or url returns 400', async () => {
     author: 'Lan Vu'
   }
 
-  await api.post('/api/blogs').send(newBlog).expect(400)
+  const token = await helper.getToken()
+
+  await api
+    .post('/api/blogs')
+    .set('Authorization', `bearer ${token}`)
+    .send(newBlog)
+    .expect(400)
+})
+
+test('a blog without token returns 401', async () => {
+  const newBlog = {
+    title: 'async/await simplifies making async calls',
+    author: 'Lan Vu',
+    url: 'lanvu.com'
+  }
+
+  await api.post('/api/blogs').send(newBlog).expect(401)
 })
 
 afterAll(() => {
