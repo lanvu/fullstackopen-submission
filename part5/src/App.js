@@ -90,6 +90,21 @@ const App = () => {
     }
   }
 
+  const updateBlog = async (blogId, blogObject) => {
+    try {
+      const updatedBlog = await blogService.update(blogId, blogObject)
+      setBlogs(
+        blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
+      )
+    } catch (error) {
+      setNotification({
+        status: 'error',
+        message: error.response.data.error,
+      })
+      resetNotification()
+    }
+  }
+
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
@@ -142,7 +157,7 @@ const App = () => {
 
       {blogForm()}
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
       ))}
     </div>
   )
