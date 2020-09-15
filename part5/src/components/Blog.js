@@ -1,12 +1,16 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog, updateBlog }) => {
+const Blog = ({ userId, blog, updateBlog, deleteBlog }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
+  }
+
+  const removeButtonStyle = {
+    backgroundColor: 'dodgerblue',
   }
 
   const [showDetails, setShowDetails] = useState(false)
@@ -17,8 +21,11 @@ const Blog = ({ blog, updateBlog }) => {
 
   const increaseLikes = () => {
     updateBlog(blog.id, { ...blog, likes: blog.likes + 1 })
-    console.log({ ...blog, likes: blog.likes + 1 })
     blog.likes += 1
+  }
+
+  const removeBlog = () => {
+    deleteBlog(blog)
   }
 
   const details = () => (
@@ -28,6 +35,11 @@ const Blog = ({ blog, updateBlog }) => {
         likes {blog.likes}
         <button onClick={increaseLikes}>like</button>
       </div>
+      {userId === blog.user && (
+        <button onClick={removeBlog} style={removeButtonStyle}>
+          remove
+        </button>
+      )}
     </>
   )
 

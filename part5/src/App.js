@@ -11,10 +11,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState({
-    status: null,
-    message: '',
-  })
+  const [notification, setNotification] = useState(null)
   const blogFormRef = useRef()
 
   const getAllBlogs = async () => {
@@ -49,11 +46,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (error) {
-      setNotification({
-        status: 'error',
-        message: error.response.data.error,
-      })
-      resetNotification()
+      notifyWith(error.response.data.error, 'error')
     }
   }
 
@@ -62,12 +55,10 @@ const App = () => {
     setUser(null)
   }
 
-  const resetNotification = () => {
+  const notifyWith = (message, type = 'success') => {
+    setNotification({ message, type })
     setTimeout(() => {
-      setNotification({
-        status: null,
-        message: '',
-      })
+      setNotification(null)
     }, 5000)
   }
 
@@ -76,17 +67,9 @@ const App = () => {
       blogFormRef.current.toggleVisibility()
       const addedBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(addedBlog))
-      setNotification({
-        status: 'success',
-        message: `a new blog ${addedBlog.title} added`,
-      })
-      resetNotification()
+      notifyWith(`a new blog ${addedBlog.title} added`)
     } catch (error) {
-      setNotification({
-        status: 'error',
-        message: error.response.data.error,
-      })
-      resetNotification()
+      notifyWith(error.response.data.error, 'error')
     }
   }
 
@@ -97,11 +80,24 @@ const App = () => {
         blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
       )
     } catch (error) {
-      setNotification({
-        status: 'error',
-        message: error.response.data.error,
-      })
-      resetNotification()
+      notifyWith(error.response.data.error, 'error')
+    }
+  }
+
+  const deleteBlog = async (blogObject) => {
+    const ok = window.confirm(
+      `Remove ${blogObject.title} by ${blogObject.author}`
+    )
+
+    try {
+      if (ok) {
+        await blogService.remove(blogObject.id)
+        setBlogs(blogs.filter((blog) => blog.id !== blogObject.id))
+        notifyWith(`Deleted ${blogObject.title}`)
+      }
+    } catch (error) {
+      setBlogs(blogs.filter((blog) => blog.id !== blogObject.id))
+      notifyWith(`${blogObject.title} had already been removed`, 'error')
     }
   }
 
@@ -135,11 +131,13 @@ const App = () => {
     </Togglable>
   )
 
+  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
+
   if (user === null) {
     return (
       <div>
         <h2>Log in to application</h2>
-        <Notification {...notification} />
+        <Notification notification={notification} />
         {loginForm()}
       </div>
     )
@@ -148,16 +146,21 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification {...notification} />
+      <Notification notification={notification} />
       <p>
         {user.name || user.username} logged in
         <button onClick={handleLogout}>logout</button>
         <br />
       </p>
-
       {blogForm()}
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
+      {sortedBlogs.map((blog) => (
+        <Blog
+          key={blog.id}
+          userId={user.id}
+          blog={blog}
+          updateBlog={updateBlog}
+          deleteBlog={deleteBlog}
+        />
       ))}
     </div>
   )
