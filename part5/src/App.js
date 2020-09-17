@@ -73,9 +73,9 @@ const App = () => {
     }
   }
 
-  const updateBlog = async (blogId, blogObject) => {
+  const updateBlog = async (blogObject) => {
     try {
-      const updatedBlog = await blogService.update(blogId, blogObject)
+      const updatedBlog = await blogService.update(blogObject)
       setBlogs(
         blogs.map((blog) => (blog.id === updatedBlog.id ? updatedBlog : blog))
       )
@@ -156,10 +156,10 @@ const App = () => {
       {sortedBlogs.map((blog) => (
         <Blog
           key={blog.id}
-          userId={user.id}
           blog={blog}
           updateBlog={updateBlog}
           deleteBlog={deleteBlog}
+          userId={user.id}
         />
       ))}
     </div>
