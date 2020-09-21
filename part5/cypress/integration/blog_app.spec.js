@@ -18,9 +18,7 @@ describe('Blog app', function () {
 
   describe('Login', function () {
     it('succeeds with correct credentials', function () {
-      cy.get('#username').type('mluukkai')
-      cy.get('#password').type('salainen')
-      cy.get('#login-button').click()
+      cy.login({ username: 'mluukkai', password: 'salainen' })
 
       cy.contains('Matti Luukkainen logged in')
     })
@@ -36,21 +34,35 @@ describe('Blog app', function () {
     })
   })
 
-  describe.only('When logged in', function () {
+  describe('When logged in', function () {
     beforeEach(function () {
-      cy.get('#username').type('mluukkai')
-      cy.get('#password').type('salainen')
-      cy.get('#login-button').click()
+      cy.login({ username: 'mluukkai', password: 'salainen' })
     })
 
     it('A blog can be created', function () {
-      cy.contains('create new blog').click()
-      cy.get('#title').type('a blog created by cypress')
-      cy.get('#author').type('lan vu')
-      cy.get('#url').type('lanvu.com')
-      cy.get('#create-button').click()
+      cy.createBlog({
+        title: 'a blog created by cypress',
+        author: 'lan vu',
+        url: 'lanvu.com',
+      })
 
       cy.contains('a blog created by cypress')
+    })
+
+    describe('and a blog exists', function () {
+      beforeEach(function () {
+        cy.createBlog({
+          title: 'a blog created by cypress',
+          author: 'lan vu',
+          url: 'lanvu.com',
+        })
+      })
+
+      it('it can be liked', function () {
+        cy.contains('a blog created by cypress').contains('view').click()
+        cy.get('#like').click()
+        cy.contains('likes 1')
+      })
     })
   })
 })
