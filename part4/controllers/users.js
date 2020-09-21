@@ -16,12 +16,12 @@ usersRouter.post('/', async (request, response, next) => {
   const passwordHash = await bcrypt.hash(password, saltRounds)
 
   const user = new User({
-    username: username,
-    name: name,
-    passwordHash
+    username,
+    name,
+    passwordHash,
   })
 
-  const savedUser = await user.save().catch(error => next(error))
+  const savedUser = await user.save().catch((error) => next(error))
 
   response.json(savedUser)
 })
