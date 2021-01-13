@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog, updateBlog, deleteBlog, userId }) => {
+const Blog = ({ blog, removeBlog, increaseLikes, userId }) => {
+  const [showDetails, setShowDetails] = useState(false)
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -8,24 +10,12 @@ const Blog = ({ blog, updateBlog, deleteBlog, userId }) => {
     borderWidth: 1,
     marginBottom: 5,
   }
-
   const removeButtonStyle = {
     backgroundColor: 'dodgerblue',
   }
 
-  const [showDetails, setShowDetails] = useState(false)
-
   const toggleShowDetails = () => {
     setShowDetails(!showDetails)
-  }
-
-  const increaseLikes = () => {
-    blog.likes += 1
-    updateBlog(blog)
-  }
-
-  const removeBlog = () => {
-    deleteBlog(blog)
   }
 
   const details = () => (
