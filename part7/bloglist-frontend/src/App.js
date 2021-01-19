@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { connect } from 'react-redux'
+import { Switch, Route, Link, useRouteMatch } from 'react-router-dom'
 import {
   initializeBlogs,
   createBlog,
@@ -14,10 +15,91 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import loginService from './services/login'
 import blogService from './services/blogs'
+import userService from './services/users'
+
+const Menu = ({ user, handleLogout }) => {
+  const padding = {
+    paddingRight: 5,
+  }
+  const background = {
+    backgroundColor: 'lightgray',
+  }
+  return (
+    <div style={background}>
+      <Link style={padding} to="/">
+        blogs
+      </Link>
+      <Link style={padding} to="/users">
+        users
+      </Link>
+      {user.name || user.username} logged in{' '}
+      <button onClick={handleLogout}>logout</button>
+    </div>
+  )
+}
+
+const UserList = ({ users }) => {
+  return (
+    <div>
+      <h1>Users</h1>
+      <table>
+        <tr>
+          <th></th>
+          <th>blogs created</th>
+        </tr>
+        {users.map((user) => (
+          <tr key={user.id}>
+            <td>
+              <Link to={`/users/${user.id}`}>{user.name}</Link>
+            </td>
+            <td>{user.blogs.length}</td>
+          </tr>
+        ))}
+      </table>
+    </div>
+  )
+}
+
+const UserView = ({ user, blogs }) => {
+  if (!user || !blogs) {
+    return null
+  }
+
+  return (
+    <div>
+      <h1>{user.name}</h1>
+      <h4>added blogs</h4>
+      <ul>
+        {user.blogs.map((blogId) => (
+          <li key={blogId}>{blogs.find((blog) => blog.id === blogId).title}</li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+const BlogView = ({ user, blog, increaseLikes }) => {
+  if (!user || !blog) {
+    return null
+  }
+
+  return (
+    <div>
+      <h1>{blog.title}</h1>
+      <a href={blog.url}>{blog.url}</a>
+      <div>
+        likes {blog.likes}
+        <button onClick={increaseLikes}>like</button>
+      </div>
+      <div>added by {user.name}</div>
+    </div>
+  )
+}
 
 const App = (props) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [users, setUsers] = useState([])
   const blogFormRef = useRef()
   const {
     blogs,
@@ -32,16 +114,18 @@ const App = (props) => {
 
   useEffect(() => {
     initializeBlogs()
-  }, [initializeBlogs])
-
-  useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON && loggedUserJSON !== 'undefined') {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       blogService.setToken(user.token)
     }
-  }, [setUser])
+    const fetchUsers = async () => {
+      const response = await userService.getAll()
+      setUsers(response)
+    }
+    fetchUsers()
+  }, [initializeBlogs, setUser])
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -127,6 +211,16 @@ const App = (props) => {
     </Togglable>
   )
 
+  const matchUser = useRouteMatch('/users/:id')
+  const userFound = matchUser
+    ? users.find((u) => u.id === matchUser.params.id)
+    : null
+
+  const matchBlog = useRouteMatch('/blogs/:id')
+  const blogFound = matchBlog
+    ? blogs.find((b) => b.id === matchBlog.params.id)
+    : null
+
   if (user === null) {
     return (
       <div>
@@ -139,29 +233,34 @@ const App = (props) => {
 
   return (
     <div>
+      <Menu user={user} handleLogout={handleLogout} />
       <h2>blogs</h2>
       <Notification />
-      <p>
-        {user.name || user.username} logged in
-        <button onClick={handleLogout}>logout</button>
-        <br />
-      </p>
-      {blogForm()}
-      <ul>
-        {blogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            userId={user.id}
-            removeBlog={() => {
-              removeBlog(blog)
-            }}
+      <Switch>
+        <Route path="/users/:id">
+          <UserView user={userFound} blogs={blogs} />
+        </Route>
+        <Route path="/users">
+          <UserList users={users} />
+        </Route>
+        <Route path="/blogs/:id">
+          <BlogView
+            user={user}
+            blog={blogFound}
             increaseLikes={() => {
-              like(blog)
+              like(blogFound)
             }}
           />
-        ))}
-      </ul>
+        </Route>
+        <Route path="/">
+          {blogForm()}
+          <ul>
+            {blogs.map((blog) => (
+              <Blog key={blog.id} blog={blog} />
+            ))}
+          </ul>
+        </Route>
+      </Switch>
     </div>
   )
 }
