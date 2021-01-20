@@ -2,6 +2,13 @@ import React, { useState, useEffect, useRef } from 'react'
 import { connect } from 'react-redux'
 import { Switch, Route, Link, useRouteMatch } from 'react-router-dom'
 import {
+  Container,
+  AppBar,
+  Toolbar,
+  Button,
+  Typography,
+} from '@material-ui/core'
+import {
   initializeBlogs,
   createBlog,
   deleteBlog,
@@ -18,23 +25,21 @@ import blogService from './services/blogs'
 import userService from './services/users'
 
 const Menu = ({ user, handleLogout }) => {
-  const padding = {
-    paddingRight: 5,
-  }
-  const background = {
-    backgroundColor: 'lightgray',
-  }
   return (
-    <div style={background}>
-      <Link style={padding} to="/">
-        blogs
-      </Link>
-      <Link style={padding} to="/users">
-        users
-      </Link>
-      {user.name || user.username} logged in{' '}
-      <button onClick={handleLogout}>logout</button>
-    </div>
+    <AppBar position="static">
+      <Toolbar>
+        <Typography type="title" style={{ flex: 1 }}>
+          {user.name || user.username} logged in{' '}
+        </Typography>
+        <Button color="inherit" component={Link} to="/">
+          blogs
+        </Button>
+        <Button color="inherit" component={Link} to="/users">
+          users
+        </Button>
+        <Button onClick={handleLogout}>logout</Button>
+      </Toolbar>
+    </AppBar>
   )
 }
 
@@ -61,7 +66,7 @@ const UserList = ({ users }) => {
 }
 
 const UserView = ({ user, blogs }) => {
-  if (!user || !blogs) {
+  if (!user || !blogs.length) {
     return null
   }
 
@@ -78,7 +83,20 @@ const UserView = ({ user, blogs }) => {
   )
 }
 
-const BlogView = ({ user, blog, increaseLikes }) => {
+const BlogView = ({ user, blog, increaseLikes, refreshBlogs }) => {
+  const [newComment, setNewComment] = useState('')
+
+  const submitComment = async (event) => {
+    event.preventDefault()
+    await blogService.addComment(blog, newComment)
+    refreshBlogs()
+    setNewComment('')
+  }
+
+  const handleCommentChange = (event) => {
+    setNewComment(event.target.value)
+  }
+
   if (!user || !blog) {
     return null
   }
@@ -92,6 +110,18 @@ const BlogView = ({ user, blog, increaseLikes }) => {
         <button onClick={increaseLikes}>like</button>
       </div>
       <div>added by {user.name}</div>
+      <h3>comments</h3>
+      <form onSubmit={submitComment}>
+        <input id="comment" value={newComment} onChange={handleCommentChange} />
+        <button id="comment-button" type="submit">
+          add comment
+        </button>
+      </form>
+      <ul>
+        {blog.comments.map((comment, idx) => (
+          <li key={idx}>{comment}</li>
+        ))}
+      </ul>
     </div>
   )
 }
@@ -223,16 +253,16 @@ const App = (props) => {
 
   if (user === null) {
     return (
-      <div>
+      <Container>
         <h2>Log in to application</h2>
         <Notification />
         {loginForm()}
-      </div>
+      </Container>
     )
   }
 
   return (
-    <div>
+    <Container>
       <Menu user={user} handleLogout={handleLogout} />
       <h2>blogs</h2>
       <Notification />
@@ -250,6 +280,9 @@ const App = (props) => {
             increaseLikes={() => {
               like(blogFound)
             }}
+            refreshBlogs={() => {
+              initializeBlogs()
+            }}
           />
         </Route>
         <Route path="/">
@@ -261,7 +294,7 @@ const App = (props) => {
           </ul>
         </Route>
       </Switch>
-    </div>
+    </Container>
   )
 }
 
