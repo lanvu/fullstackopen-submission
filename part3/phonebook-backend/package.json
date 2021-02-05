@@ -1,5 +1,5 @@
 {
-  "name": "fullstackopen-part3",
+  "name": "phonebook-backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:ui": "rm -rf build && cd ../fullstackopen-submission/part2/phonebook && yarn build && cp -r build ../../../fullstackopen-part3",
+    "build:ui": "rm -rf build && cd ../../part2/phonebook && yarn build && cp -r build ../../part3/phonebook-backend",
     "deploy": "git push heroku master",
     "deploy:full": "yarn build:ui && git add . && git commit -m 'Build UI' && yarn deploy",
     "logs:prod": "heroku logs --tail",
