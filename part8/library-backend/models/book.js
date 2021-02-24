@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const { schema: Author } = require('./author')
 
 const schema = new mongoose.Schema({
   title: {
@@ -12,7 +11,7 @@ const schema = new mongoose.Schema({
     type: Number,
   },
   author: {
-    type: Author,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Author',
   },
   genres: [{ type: String }],

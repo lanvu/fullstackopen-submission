@@ -11,6 +11,26 @@ const NewBook = (props) => {
 
   const [addBook] = useMutation(ADD_BOOK, {
     refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
+    update: (store, response) => {
+      genres.forEach((genre) => {
+        try {
+          const dataInStore = store.readQuery({
+            query: ALL_BOOKS,
+            variables: { genre },
+          })
+
+          store.writeQuery({
+            query: ALL_BOOKS,
+            variables: { genre },
+            data: {
+              allBooks: [...dataInStore.allBooks].concat(response.data.addBook),
+            },
+          })
+        } catch (e) {
+          console.log('not queried', genre)
+        }
+      })
+    },
   })
 
   if (!props.show) {
