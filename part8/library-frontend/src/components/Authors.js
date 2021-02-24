@@ -30,6 +30,28 @@ const Authors = (props) => {
     setYear('')
   }
 
+  const EditForm = () => (
+    <div>
+      <h3>Set birthyear</h3>
+      <form onSubmit={submit}>
+        <Select
+          defaultValue={selectedOption}
+          onChange={setSelectedOption}
+          options={options}
+        />
+        <div>
+          born
+          <input
+            type="number"
+            value={year}
+            onChange={({ target }) => setYear(target.value)}
+          />
+        </div>
+        <button type="submit">update author</button>
+      </form>
+    </div>
+  )
+
   return (
     <div>
       <h2>authors</h2>
@@ -50,23 +72,7 @@ const Authors = (props) => {
         </tbody>
       </table>
 
-      <h3>Set birthyear</h3>
-      <form onSubmit={submit}>
-        <Select
-          defaultValue={selectedOption}
-          onChange={setSelectedOption}
-          options={options}
-        />
-        <div>
-          born
-          <input
-            type="number"
-            value={year}
-            onChange={({ target }) => setYear(target.value)}
-          />
-        </div>
-        <button type="submit">update author</button>
-      </form>
+      {props.showEdit && <EditForm />}
     </div>
   )
 }
