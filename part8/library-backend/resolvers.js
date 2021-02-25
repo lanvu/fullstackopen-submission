@@ -11,7 +11,9 @@ const pubsub = new PubSub()
 
 module.exports = {
   Author: {
-    bookCount: (root) => Book.countDocuments({ author: root._id }),
+    bookCount: async (root, args, { bookLoader }) => {
+      return await bookLoader.load(root._id)
+    },
   },
 
   Query: {
