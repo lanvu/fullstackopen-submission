@@ -1,10 +1,13 @@
 const { UserInputError, AuthenticationError } = require('apollo-server')
 const jwt = require('jsonwebtoken')
+const { PubSub } = require('apollo-server')
 const { JWT_SECRET } = require('./config')
 
 const Book = require('./models/book')
 const Author = require('./models/author')
 const User = require('./models/user')
+
+const pubsub = new PubSub()
 
 module.exports = {
   Author: {
@@ -57,6 +60,8 @@ module.exports = {
       }
       book = await Book.findById(book.id).populate('author')
 
+      pubsub.publish('BOOK_ADDED', { bookAdded: book })
+
       return book
     },
     editAuthor: async (root, args, { currentUser }) => {
@@ -94,6 +99,12 @@ module.exports = {
       }
 
       return { value: jwt.sign(userForToken, JWT_SECRET) }
+    },
+  },
+
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator(['BOOK_ADDED']),
     },
   },
 }
