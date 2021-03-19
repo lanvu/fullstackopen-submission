@@ -8,7 +8,7 @@ interface Result {
   average: number
 }
 
-const calculateExercises = (hours: Array<number>, target: number): Result => {
+const calculateExercises = (target: number, hours: Array<number>): Result => {
   const periodLength = hours.length
   const trainingDays = hours.filter((h) => h > 0).length
   let rating = null
@@ -39,4 +39,6 @@ const calculateExercises = (hours: Array<number>, target: number): Result => {
   }
 }
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
+const target: number = Number(process.argv[2])
+const hours: Array<number> = process.argv.slice(3).map((a) => Number(a))
+console.log(calculateExercises(target, hours))
