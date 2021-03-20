@@ -13,9 +13,9 @@ const calculateExercises = (target: number, hours: Array<number>): Result => {
   const trainingDays = hours.filter((h) => h > 0).length;
   let rating = null;
   let ratingDescription = '';
-  const average = hours.reduce((a, b) => a + b) / periodLength;
+  const average = hours.reduce((a, b) => a + b, 0) / periodLength;
 
-  if (average < target / 2) {
+  if (average < target / 2 || periodLength == 0) {
     rating = 1;
     ratingDescription = 'bad';
   } else if (average >= target / 2 && average < target) {
@@ -39,6 +39,8 @@ const calculateExercises = (target: number, hours: Array<number>): Result => {
   };
 };
 
-const target = Number(process.argv[2]);
-const hours: Array<number> = process.argv.slice(3).map((a) => Number(a));
-console.log(calculateExercises(target, hours));
+// const target = Number(process.argv[2]);
+// const hours: Array<number> = process.argv.slice(3).map((a) => Number(a));
+// console.log(calculateExercises(target, hours));
+
+export default calculateExercises;
