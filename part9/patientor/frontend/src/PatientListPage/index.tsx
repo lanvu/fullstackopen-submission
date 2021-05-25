@@ -1,19 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import { Container, Table, Button } from "semantic-ui-react";
 
-import { PatientFormValues } from "../AddPatientModal/AddPatientForm";
-import AddPatientModal from "../AddPatientModal";
-import { Patient } from "../types";
 import { apiBaseUrl } from "../constants";
-import HealthRatingBar from "../components/HealthRatingBar";
 import { useStateValue } from "../state";
+import { Patient } from "../types";
+
+import HealthRatingBar from "../components/HealthRatingBar";
+import AddPatientModal from "../AddPatientModal";
+import { PatientFormValues } from "../AddPatientModal/AddPatientForm";
 
 const PatientListPage = () => {
   const [{ patients }, dispatch] = useStateValue();
 
-  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<string | undefined>();
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [error, setError] = useState<string | undefined>();
 
   const openModal = (): void => setModalOpen(true);
 
@@ -31,8 +33,8 @@ const PatientListPage = () => {
       dispatch({ type: "ADD_PATIENT", payload: newPatient });
       closeModal();
     } catch (e) {
-      console.error(e.response?.data || 'Unknown Error');
-      setError(e.response?.data?.error || 'Unknown error');
+      console.error(e.response?.data || "Unknown Error");
+      setError(e.response?.data?.error || "Unknown error");
     }
   };
 
@@ -53,7 +55,9 @@ const PatientListPage = () => {
         <Table.Body>
           {Object.values(patients).map((patient: Patient) => (
             <Table.Row key={patient.id}>
-              <Table.Cell>{patient.name}</Table.Cell>
+              <Table.Cell>
+                <Link to={`/patients/${patient.id}`}>{patient.name}</Link>
+              </Table.Cell>
               <Table.Cell>{patient.gender}</Table.Cell>
               <Table.Cell>{patient.occupation}</Table.Cell>
               <Table.Cell>
