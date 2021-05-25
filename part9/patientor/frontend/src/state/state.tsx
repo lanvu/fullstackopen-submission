@@ -8,12 +8,12 @@ export type State = {
 };
 
 const initialState: State = {
-  patients: {}
+  patients: {},
 };
 
 export const StateContext = createContext<[State, React.Dispatch<Action>]>([
   initialState,
-  () => initialState
+  () => initialState,
 ]);
 
 type StateProviderProps = {
@@ -23,7 +23,7 @@ type StateProviderProps = {
 
 export const StateProvider: React.FC<StateProviderProps> = ({
   reducer,
-  children
+  children,
 }: StateProviderProps) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   return (
@@ -32,4 +32,19 @@ export const StateProvider: React.FC<StateProviderProps> = ({
     </StateContext.Provider>
   );
 };
+
 export const useStateValue = () => useContext(StateContext);
+
+export const setPatientList = (patientListFromApi: Patient[]): Action => {
+  return {
+    type: "SET_PATIENT_LIST",
+    payload: patientListFromApi,
+  };
+};
+
+export const addPatient = (patientFromApi: Patient): Action => {
+  return {
+    type: "ADD_PATIENT",
+    payload: patientFromApi,
+  };
+};

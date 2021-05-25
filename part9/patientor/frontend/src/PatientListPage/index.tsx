@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { Container, Table, Button } from "semantic-ui-react";
 
 import { apiBaseUrl } from "../constants";
-import { useStateValue } from "../state";
+import { useStateValue, addPatient } from "../state";
 import { Patient } from "../types";
 
 import HealthRatingBar from "../components/HealthRatingBar";
@@ -30,7 +30,7 @@ const PatientListPage = () => {
         `${apiBaseUrl}/patients`,
         values
       );
-      dispatch({ type: "ADD_PATIENT", payload: newPatient });
+      dispatch(addPatient(newPatient));
       closeModal();
     } catch (e) {
       console.error(e.response?.data || "Unknown Error");
