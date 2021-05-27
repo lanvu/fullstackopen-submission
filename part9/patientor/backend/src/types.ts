@@ -10,32 +10,34 @@ export enum Gender {
   Other = "other",
 }
 
+export type DiagnosisCodes = Array<Diagnosis["code"]>;
+
 export interface BaseEntry {
   id: string;
   description: string;
   date: string;
   specialist: string;
-  diagnosisCodes?: Array<Diagnosis["code"]>;
+  diagnosisCodes?: DiagnosisCodes;
 }
 
-interface Discharge {
+export interface Discharge {
   date: string;
   criteria: string;
 }
 
 interface HospitalEntry extends BaseEntry {
   type: "Hospital";
-  discharge: Discharge;
+  discharge?: Discharge;
 }
 
-interface SickLeave {
+export interface SickLeave {
   startDate: string;
   endDate: string;
 }
 
 interface OccupationalHealthcareEntry extends BaseEntry {
   type: "OccupationalHealthcare";
-  employerName?: string;
+  employerName: string;
   sickLeave?: SickLeave;
 }
 
@@ -67,5 +69,16 @@ export interface Patient {
 }
 
 export type PublicPatient = Omit<Patient, "ssn" | "entries">;
-
 export type NewPatient = Omit<Patient, "id">;
+
+export type NewBaseEntry = Omit<BaseEntry, "id">;
+export type NewHospitalEntry = Omit<HospitalEntry, "id">;
+export type NewOccupationalHealthcareEntry = Omit<
+  OccupationalHealthcareEntry,
+  "id"
+>;
+export type NewHealthCheckEntry = Omit<HealthCheckEntry, "id">;
+export type NewEntry =
+  | NewHospitalEntry
+  | NewOccupationalHealthcareEntry
+  | NewHealthCheckEntry;

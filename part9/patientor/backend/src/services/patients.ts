@@ -1,13 +1,13 @@
 import { v1 as uuid } from "uuid";
-import patientData from "../../data/patients";
-import { Patient, PublicPatient, NewPatient } from "../types";
+import patientList from "../../data/patients";
+import { Patient, PublicPatient, NewPatient, NewEntry } from "../types";
 
 const getAll = (): Patient[] => {
-  return patientData;
+  return patientList;
 };
 
 const getAllPublic = (): PublicPatient[] => {
-  return patientData.map(({ id, name, dateOfBirth, gender, occupation }) => ({
+  return patientList.map(({ id, name, dateOfBirth, gender, occupation }) => ({
     id,
     name,
     dateOfBirth,
@@ -17,14 +17,25 @@ const getAllPublic = (): PublicPatient[] => {
 };
 
 const getOne = (id: string): Patient | undefined => {
-  return patientData.find((p) => p.id === id);
+  return patientList.find((p) => p.id === id);
 };
 
 const addOne = (patient: NewPatient) => {
   const id = uuid();
   const newPatient = { ...patient, id };
-  patientData.push(newPatient);
+  patientList.push(newPatient);
   return newPatient;
+};
+
+const addOneEntry = (patientId: string, entry: NewEntry) => {
+  const id = uuid();
+  const newEntry = { ...entry, id };
+  patientList.map((p) => {
+    if (p.id === patientId) {
+      p.entries.push(newEntry);
+    }
+    return p;
+  });
 };
 
 export default {
@@ -32,4 +43,5 @@ export default {
   getAllPublic,
   getOne,
   addOne,
+  addOneEntry,
 };
