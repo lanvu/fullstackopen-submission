@@ -9,7 +9,7 @@ import { apiBaseUrl } from "../constants";
 
 const PatientPage = () => {
   const { id } = useParams<{ id: string }>();
-  const [{ patients }, dispatch] = useStateValue();
+  const [{ patients, diagnoses }, dispatch] = useStateValue();
 
   const patient = patients[id];
 
@@ -31,6 +31,10 @@ const PatientPage = () => {
   }, []);
 
   if (!patient) {
+    return null;
+  }
+
+  if (Object.keys(diagnoses).length === 0) {
     return null;
   }
 
@@ -60,7 +64,9 @@ const PatientPage = () => {
             <ul>
               {entry.diagnosisCodes &&
                 entry.diagnosisCodes.map((code, index) => (
-                  <li key={index}>{code}</li>
+                  <li key={index}>
+                    {code} {diagnoses[code].name}
+                  </li>
                 ))}
             </ul>
           </div>
