@@ -213,7 +213,7 @@ export const toNewEntry = (body: any): NewEntry => {
     return toHospitalEntry(body);
   } else if (type === "OccupationalHealthcare") {
     return toOccupationalHealthcareEntry(body);
-  } else if (type === "HealthCheckEntry") {
+  } else if (type === "HealthCheck") {
     return toHealthCheckEntry(body);
   }
   throw new Error("Invalid entry type");

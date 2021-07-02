@@ -10,6 +10,11 @@ export enum Gender {
   Other = "other",
 }
 
+export type GenderOption = {
+  value: Gender;
+  label: string;
+};
+
 export interface BaseEntry {
   id: string;
   description: string;
@@ -25,7 +30,7 @@ interface Discharge {
 
 export interface HospitalEntry extends BaseEntry {
   type: "Hospital";
-  discharge: Discharge;
+  discharge?: Discharge;
 }
 
 interface SickLeave {
@@ -35,7 +40,7 @@ interface SickLeave {
 
 export interface OccupationalHealthcareEntry extends BaseEntry {
   type: "OccupationalHealthcare";
-  employerName?: string;
+  employerName: string;
   sickLeave?: SickLeave;
 }
 
@@ -56,6 +61,26 @@ export type Entry =
   | OccupationalHealthcareEntry
   | HealthCheckEntry;
 
+export type NewBaseEntry = Omit<BaseEntry, "id">;
+export type NewHospitalEntry = Omit<HospitalEntry, "id">;
+export type NewOccupationalHealthcareEntry = Omit<
+  OccupationalHealthcareEntry,
+  "id"
+>;
+export type NewHealthCheckEntry = Omit<HealthCheckEntry, "id">;
+export type NewEntry =
+  | NewHospitalEntry
+  | NewOccupationalHealthcareEntry
+  | NewHealthCheckEntry;
+
+export interface EntryFormValues extends NewBaseEntry {
+  type: string;
+  discharge?: Discharge;
+  employerName?: string;
+  sickLeave?: SickLeave;
+  healthCheckRating?: HealthCheckRating;
+}
+
 export interface Patient {
   id: string;
   name: string;
@@ -65,3 +90,10 @@ export interface Patient {
   dateOfBirth?: string;
   entries: Entry[];
 }
+
+export type PatientFormValues = Omit<Patient, "id" | "entries">;
+
+export type TypeOption = {
+  value: string;
+  label: string;
+};

@@ -5,11 +5,10 @@ import { Container, Table, Button } from "semantic-ui-react";
 
 import { apiBaseUrl } from "../constants";
 import { useStateValue, addPatient } from "../state";
-import { Patient } from "../types";
+import { Patient, PatientFormValues } from "../types";
 
 import HealthRatingBar from "../components/HealthRatingBar";
 import AddPatientModal from "../AddPatientModal";
-import { PatientFormValues } from "../AddPatientModal/AddPatientForm";
 
 const PatientListPage = () => {
   const [{ patients }, dispatch] = useStateValue();
